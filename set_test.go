@@ -1,7 +1,10 @@
 package set
 
 import (
+	"fmt"
 	"slices"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -86,5 +89,62 @@ func TestUnion(t *testing.T) {
 	}
 	if !u.Contains(-6) {
 		t.Errorf("union should contain -6")
+	}
+}
+
+func TestStringer(t *testing.T) {
+	s1 := Of(1, 4, -2)
+	// var s2 Set[int]
+
+	str := s1.String()
+
+	rightPrefix := strings.HasPrefix(str, "set[")
+	if !rightPrefix {
+		t.Errorf("expected \"set[\" at the start of string %q", str)
+	}
+
+	rightSuffix := strings.HasSuffix(str, "]")
+	if !rightSuffix {
+		t.Errorf("expected \"]\" at the end of %q", str)
+	}
+
+	if rightPrefix && rightSuffix {
+		var temp []int
+		middle := str[4 : len(str)-1]
+		fmt.Println("XD", middle)
+		for i, item := range strings.Split(middle, " ") {
+			integ, err := strconv.Atoi(item)
+			if err != nil {
+				t.Fatalf("couldn't parse index %d element %q as an integer: %s", i, item, err)
+			} else {
+				temp = append(temp, integ)
+			}
+		}
+
+		if len(temp) != 3 {
+			t.Errorf("should have 3 elements, but string representation showed %d", len(temp))
+		}
+
+		expectedEls := []int{-2, 1, 4}
+
+		var strMissing []int
+		for _, el := range expectedEls {
+			if !slices.Contains(temp, el) {
+				strMissing = append(strMissing, el)
+			}
+		}
+		if len(strMissing) != 0 {
+			t.Errorf("string representation missing elements %s", fmt.Sprint(strMissing))
+		}
+
+		var strExtra []int
+		for _, el := range expectedEls {
+			if !slices.Contains(expectedEls, el) {
+				strExtra = append(strExtra, el)
+			}
+		}
+		if len(strExtra) != 0 {
+			t.Errorf("string representation contained extra elements %s", fmt.Sprint(strExtra))
+		}
 	}
 }

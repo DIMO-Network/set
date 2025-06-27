@@ -1,8 +1,10 @@
 package set
 
 import (
+	"fmt"
 	"iter"
 	"maps"
+	"slices"
 )
 
 // Set is a finite set of elements of some comparable type.
@@ -50,6 +52,12 @@ func (s *Set[E]) Delete(x E) bool {
 // Len returns the number of elements in the set.
 func (s *Set[E]) Len() int {
 	return len(s.m)
+}
+
+// String returns a human-readable representation of the set's
+// elements.
+func (s *Set[E]) String() string {
+	return fmt.Sprintf("set%s", fmt.Sprint(slices.Collect(s.All())))
 }
 
 // All returns an iterator over the elements of the set. As for
